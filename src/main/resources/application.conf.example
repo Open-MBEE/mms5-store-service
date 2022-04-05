@@ -1,0 +1,19 @@
+ktor {
+    deployment {
+        port = 8080
+        port = ${?PORT}
+    }
+    application {
+        modules = [ org.openmbee.mms5.ApplicationKt.module ]
+    }
+}
+jwt {
+    domain = "https://mms5.openmbee.org/"
+    domain = ${?JWT_DOMAIN}
+    audience = "jwt-audience"
+    audience = ${?JWT_AUDIENCE}
+    realm = "MMS5 Microservices"
+    realm = ${?JWT_REALM}
+    secret = "secret123"
+    secret = ${?JWT_SECRET}
+}

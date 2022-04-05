@@ -1,0 +1,1 @@
+rootProject.name = "mms5-load-service"
