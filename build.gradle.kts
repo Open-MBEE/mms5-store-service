@@ -2,6 +2,7 @@ val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val s3_version: String by project
+val tika_version: String by project
 
 plugins {
     application
