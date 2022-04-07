@@ -14,4 +14,5 @@ fun Application.module() {
     configureAuthentication()
     configureMonitoring()
     configureSerialization()
+    configureStorage()
 }

@@ -15,11 +15,12 @@ import com.amazonaws.services.s3.model.PutObjectRequest
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.config.*
+import io.ktor.request.*
+import io.ktor.response.*
 import io.ktor.routing.*
 import org.openmbee.mms5.lib.MimeTypes
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
-import java.io.IOException
 import java.time.Instant
 import java.time.LocalDate
 import java.util.*
@@ -29,30 +30,35 @@ fun Application.configureStorage() {
 
     routing {
         authenticate {
-            put("upload") {
-
+            put("upload/{filename}") {
+                val requestBody = call.receiveText()
+                val filename = call.parameters["filename"]!!
+                val location = s3Storage.store(requestBody.toByteArray(), filename)
+                call.respond(location)
             }
 
-            get("file") {
+            get("presigned/{location}") {
+                val location = call.parameters["location"]!!
+                call.respond(s3Storage.getPreSignedUrl(location))
+            }
 
+            get("file/{location}") {
+                val location = call.parameters["location"]!!
+                call.respond(s3Storage.get(location))
             }
         }
     }
 }
 
 class S3Storage(s3Config: S3Config) {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     private val s3Client = getClient(s3Config)
     private val bucket = s3Config.bucket
 
-    private val logger = LoggerFactory.getLogger(javaClass)
-
     fun get(location: String?): ByteArray {
         val rangeObjectRequest = GetObjectRequest(bucket, location)
-        return try {
-            s3Client.getObject(rangeObjectRequest).objectContent.readAllBytes()
-        } catch (ioe: IOException) {
-            throw ioe
-        }
+        return s3Client.getObject(rangeObjectRequest).objectContent.readAllBytes()
     }
 
     fun getPreSignedUrl(location: String): String {
