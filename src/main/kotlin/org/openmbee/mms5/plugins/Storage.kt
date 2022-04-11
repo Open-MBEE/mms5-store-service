@@ -85,7 +85,7 @@ class S3Storage(s3Config: S3Config) {
     private fun buildLocation(filename: String, extension: String): String {
         val today = LocalDate.now()
         return java.lang.String.format(
-            "%d/%s.%s",
+            "%s/%s.%s",
             today,
             filename,
             extension
@@ -145,8 +145,8 @@ fun getS3ConfigValues(config: ApplicationConfig): S3Config {
     val region = config.propertyOrNull("s3.region")?.getString() ?: ""
     val bucket = config.propertyOrNull("s3.bucket")?.getString() ?: ""
     val endpoint = config.propertyOrNull("s3.endpoint")?.getString() ?: ""
-    val accessKey = config.propertyOrNull("s3.accessKey")?.getString() ?: ""
-    val secretKey = config.propertyOrNull("s3.secretKey")?.getString() ?: ""
+    val accessKey = config.propertyOrNull("s3.access_key")?.getString() ?: ""
+    val secretKey = config.propertyOrNull("s3.secret_key")?.getString() ?: ""
     return S3Config(
         region,
         bucket,
