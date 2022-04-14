@@ -37,13 +37,13 @@ fun Application.configureStorage() {
                 call.respond(s3Storage.getPreSignedUrl(location))
             }
 
-            get("presigned/{location}") {
-                val location = call.parameters["location"]!!
+            get("presigned/{filename}") {
+                val location = S3Storage.buildLocation(call.parameters["filename"]!!, MimeTypes.Text.TTL.extension)
                 call.respond(s3Storage.getPreSignedUrl(location))
             }
 
-            get("file/{location}") {
-                val location = call.parameters["location"]!!
+            get("file/{filename}") {
+                val location = S3Storage.buildLocation(call.parameters["filename"]!!, MimeTypes.Text.TTL.extension)
                 call.respond(s3Storage.get(location))
             }
         }
@@ -82,26 +82,6 @@ class S3Storage(s3Config: S3Config) {
         return location
     }
 
-    private fun buildLocation(filename: String, extension: String): String {
-        val today = LocalDate.now()
-        return java.lang.String.format(
-            "%s/%s.%s",
-            today,
-            filename,
-            extension
-        )
-    }
-
-    private fun getExtension(mime: String): String {
-        var extension = ""
-        try {
-            extension = MimeTypes.Text.TTL.extension
-        } catch (e: Exception) {
-            logger.error("Error getting extension: ", e)
-        }
-        return extension
-    }
-
     private fun getClient(s3ConfigValues: S3Config): AmazonS3 {
         val clientConfiguration = ClientConfiguration()
         clientConfiguration.signerOverride = "AWSS3V4SignerType"
@@ -130,6 +110,30 @@ class S3Storage(s3Config: S3Config) {
         }
 
         return s3Client
+    }
+
+    companion object {
+        fun buildLocation(filename: String, extension: String): String {
+            val today = LocalDate.now()
+            return java.lang.String.format(
+                "%s/%s.%s",
+                today,
+                filename,
+                extension
+            )
+        }
+
+        /* TODO: Get extension or mimetype from request body once we support multiple formats
+        private fun getExtension(mime: String): String {
+            var extension = ""
+            try {
+                extension = MimeTypes.Text.TTL.extension
+            } catch (e: Exception) {
+                logger.error("Error getting extension: ", e)
+            }
+            return extension
+        }
+         */
     }
 }
 
