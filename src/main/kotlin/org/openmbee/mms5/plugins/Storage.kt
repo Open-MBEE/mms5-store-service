@@ -30,11 +30,11 @@ fun Application.configureStorage() {
 
     routing {
         authenticate {
-            put("upload/{filename}") {
+            post("store/{filename}") {
                 val requestBody = call.receiveText()
                 val filename = call.parameters["filename"]!!
                 val location = s3Storage.store(requestBody.toByteArray(), filename)
-                call.respond(location)
+                call.respond(s3Storage.getPreSignedUrl(location))
             }
 
             get("presigned/{location}") {

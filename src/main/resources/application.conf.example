@@ -17,3 +17,15 @@ jwt {
     secret = "secret123"
     secret = ${?JWT_SECRET}
 }
+s3 {
+    region = "us-gov-west-1"
+    region = ${?S3_REGION}
+    bucket = "load"
+    bucket = ${?S3_BUCKET}
+    endpoint = ""
+    endpoint = ${?S3_ENDPOINT}
+    access_key = ""
+    access_key = ${?S3_ACCESS_KEY}
+    secret_key = ""
+    secret_key = ${?S3_SECRET_KEY}
+}
