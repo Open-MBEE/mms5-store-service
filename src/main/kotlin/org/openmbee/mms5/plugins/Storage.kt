@@ -15,6 +15,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.config.*
+import io.ktor.features.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -26,6 +27,8 @@ import java.time.LocalDate
 import java.util.*
 
 fun Application.configureStorage() {
+    install(AutoHeadResponse)
+
     val s3Storage = S3Storage(getS3ConfigValues(environment.config))
 
     routing {
