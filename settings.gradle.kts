@@ -1,1 +1,1 @@
-rootProject.name = "org.openmbee.mms5.load-service"
+rootProject.name = "org.openmbee.mms5.store-service"
