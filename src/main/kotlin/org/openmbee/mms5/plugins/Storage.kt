@@ -37,13 +37,11 @@ fun Application.configureStorage() {
                 val requestBody = call.receiveText()
                 val filename = call.parameters["filename"]!!
                 val location = s3Storage.store(requestBody.toByteArray(), filename)
-                val presigned = s3Storage.getPreSignedUrl(location)
                 call.application.log.info("Location:\n$location")
-                call.application.log.info("Location:\n$presigned")
-                call.respond(presigned)
+                call.respond(s3Storage.getPreSignedUrl(location))
             }
 
-            get("presigned/{filename}") {
+            get("signed/{filename}") {
                 val location = S3Storage.buildLocation(call.parameters["filename"]!!, MimeTypes.Text.TTL.extension)
                 call.application.log.info("Location:\n$location")
                 call.respond(s3Storage.getPreSignedUrl(location))
