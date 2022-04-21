@@ -1,10 +1,12 @@
 package org.openmbee.mms5.lib
 
+import io.ktor.http.ContentType
+
 object MimeTypes {
     object Text {
         object TTL {
             const val extension = "ttl"
-            const val contentType = "text/turtle"
+            val contentType = ContentType("text", "turtle")
         }
     }
 }

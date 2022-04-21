@@ -16,12 +16,14 @@ import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.config.*
 import io.ktor.features.*
+import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import org.openmbee.mms5.lib.MimeTypes
 import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.time.Instant
 import java.time.LocalDate
 import java.util.*
@@ -34,10 +36,13 @@ fun Application.configureStorage() {
     routing {
         authenticate {
             post("store/{filename}") {
-                val requestBody = call.receiveText()
+                val requestBody = call.receiveStream()
                 val filename = call.parameters["filename"]!!
-                val location = s3Storage.store(requestBody.toByteArray(), filename)
+                val contentSize = call.request.header(HttpHeaders.ContentLength)!!.toLong()
+                val contentType = call.request.contentType()
+                val location = s3Storage.store(requestBody, filename, contentSize, contentType)
                 call.application.log.info("Location:\n$location")
+                call.application.log.info("Content-Type: $contentType")
                 call.respond(s3Storage.getPreSignedUrl(location))
             }
 
@@ -72,12 +77,12 @@ class S3Storage(s3Config: S3Config) {
             .toString()
     }
 
-    fun store(data: ByteArray, filename: String): String {
+    fun store(data: InputStream, filename: String, contentLength: Long, contentType: ContentType): String {
         val location = buildLocation(filename, MimeTypes.Text.TTL.extension)
         val om = ObjectMetadata()
-        om.contentType = MimeTypes.Text.TTL.contentType
-        om.contentLength = data.size.toLong()
-        val por = PutObjectRequest(bucket, location, ByteArrayInputStream(data), om)
+        om.contentType = contentType.toString()
+        om.contentLength = contentLength
+        val por = PutObjectRequest(bucket, location, data, om)
         try {
             s3Client.putObject(por)
         } catch (e: RuntimeException) {
