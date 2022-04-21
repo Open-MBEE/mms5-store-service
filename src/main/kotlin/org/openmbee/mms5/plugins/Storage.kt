@@ -36,13 +36,14 @@ fun Application.configureStorage() {
     routing {
         authenticate {
             post("store/{filename}") {
-                val requestBody = call.receiveStream()
-                val filename = call.parameters["filename"]!!
-                val contentSize = call.request.header(HttpHeaders.ContentLength)!!.toLong()
                 val contentType = call.request.contentType()
-                val location = s3Storage.store(requestBody, filename, contentSize, contentType)
+                val location = s3Storage.store(
+                    call.receiveStream(),
+                    call.parameters["filename"]!!,
+                    call.request.header(HttpHeaders.ContentLength)!!.toLong(),
+                    call.request.contentType()
+                )
                 call.application.log.info("Location:\n$location")
-                call.application.log.info("Content-Type: $contentType")
                 call.respond(s3Storage.getPreSignedUrl(location))
             }
 
