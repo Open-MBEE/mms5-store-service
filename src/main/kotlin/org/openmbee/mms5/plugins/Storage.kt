@@ -22,7 +22,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import org.openmbee.mms5.lib.MimeTypes
 import org.slf4j.LoggerFactory
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.time.Instant
 import java.time.LocalDate
