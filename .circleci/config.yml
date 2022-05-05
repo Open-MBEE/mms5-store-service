@@ -84,12 +84,16 @@ workflows:
           filters:
             tags:
               only: /[0-9.]+(-(a|b|rc)[0-9]+)?/
+          context:
+            - DockerHub
       - deploy_snapshot:
           requires:
             - build_and_test
           filters:
             branches:
               only: /((release|hotfix|support)/[0-9.]+(-(a|b|rc)[0-9]+)?|develop)/
+          context:
+            - DockerHub
       - deploy_release:
           requires:
             - build_and_test
@@ -98,3 +102,5 @@ workflows:
               only: /[0-9.]+(-(a|b|rc)[0-9]+)?/
             branches:
               ignore: /.*/
+          context:
+            - DockerHub
