@@ -54,7 +54,7 @@ jobs:
           command: docker push openmbee/mms5-store-service:${CIRCLE_BRANCH#*/}-SNAPSHOT
   deploy_release:
     executor: openjdk_executor
-    working_directory: /home/circleci/mms
+    working_directory: /home/circleci/mms5-store-service
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
