@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  node: circleci/docker@2.1.1
+  docker: circleci/docker@2.1.1
 executors:
   openjdk_executor:
     docker:
@@ -12,7 +12,7 @@ executors:
 jobs:
   build_and_test:
     executor:
-      name: node/default
+      name: docker/docker
     working_directory: /home/circleci/mms5-store-service
     steps:
       - checkout
