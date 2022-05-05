@@ -1,30 +1,23 @@
 version: 2.1
 orbs:
-  node: circleci/node@1.1.6
-executors:
-  openjdk_executor:
-    docker:
-      - image: cimg/openjdk:17.0.3-node
-    environment:
-      _JAVA_OPTIONS: "-Xmx4g"
-      GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  docker: circleci/docker@2.1.1
 
 jobs:
   build_and_test:
     executor:
-      name: node/default
+      name: docker/docker
     working_directory: /home/circleci/mms5-store-service
     steps:
       - checkout
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: "Build image"
+          name: Build docker image
           command: |
             cp src/main/resources/application.conf.example ./src/main/resources/application.conf
             docker build -t openmbee/mms5-store-service:latest .
       - run:
-          name: "Export docker image"
+          name: Export docker image
           command: |
             docker save -o mms5-store-service.tar openmbee/mms5-store-service:latest
       - persist_to_workspace:
@@ -33,7 +26,8 @@ jobs:
             - mms5-store-service/*
 
   deploy_snapshot:
-    executor: openjdk_executor
+    executor:
+      name: docker/docker
     working_directory: /home/circleci/mms5-store-service
     steps:
       - setup_remote_docker:
@@ -53,7 +47,8 @@ jobs:
           name: Deploy snapshot to Dockerhub
           command: docker push openmbee/mms5-store-service:${CIRCLE_BRANCH#*/}-SNAPSHOT
   deploy_release:
-    executor: openjdk_executor
+    executor:
+      name: docker/docker
     working_directory: /home/circleci/mms5-store-service
     steps:
       - setup_remote_docker:
