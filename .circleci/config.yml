@@ -12,12 +12,12 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: "Build image"
+          name: Build docker image
           command: |
             cp src/main/resources/application.conf.example ./src/main/resources/application.conf
             docker build -t openmbee/mms5-store-service:latest .
       - run:
-          name: "Export docker image"
+          name: Export docker image
           command: |
             docker save -o mms5-store-service.tar openmbee/mms5-store-service:latest
       - persist_to_workspace:
